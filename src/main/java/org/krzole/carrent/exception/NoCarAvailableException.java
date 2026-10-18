@@ -5,7 +5,9 @@ import org.krzole.carrent.model.enums.CarType;
 
 import java.io.Serial;
 
-/** Thrown when every car of the requested type is booked during the requested period. */
+/**
+ * Thrown when every car of the requested type is booked during the requested period.
+ */
 public class NoCarAvailableException extends RuntimeException {
 
     @Serial

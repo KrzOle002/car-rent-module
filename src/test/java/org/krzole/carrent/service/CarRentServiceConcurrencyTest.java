@@ -27,7 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CarRentServiceConcurrencyTest {
 
-    private static final Clock CLOCK = Clock.fixed(Instant.parse("2026-10-16T12:00:00Z"), ZoneOffset.UTC);
+    private static final Clock CLOCK = Clock.fixed(Instant.parse("2026-10-16T12:00:00Z"),
+                                                   ZoneOffset.UTC);
     private static final LocalDateTime START = LocalDateTime.of(2026, 11, 1, 10, 0);
     private static final int THREADS = 32;
     private static final int ROUNDS = 50;
@@ -39,7 +40,8 @@ class CarRentServiceConcurrencyTest {
         for (int round = 0; round < ROUNDS; round++) {
             CarRentService service = new CarRentService(Fleet.withCounts(0, suvs, 0), CLOCK);
 
-            List<Object> results = race(THREADS, i -> service.reserve("c" + i, CarType.SUV, START, 2));
+            List<Object> results = race(THREADS,
+                                        i -> service.reserve("c" + i, CarType.SUV, START, 2));
 
             long successes = results.stream().filter(Reservation.class::isInstance).count();
             assertEquals(suvs, successes, "round " + round);
@@ -47,7 +49,7 @@ class CarRentServiceConcurrencyTest {
                     .forEach(r -> assertInstanceOf(NoCarAvailableException.class, r));
 
             long distinctCars = results.stream().filter(Reservation.class::isInstance)
-                    .map(r -> ((Reservation) r).car()).distinct().count();
+                    .map(r -> ((Reservation) r).getCar()).distinct().count();
             assertEquals(suvs, distinctCars, "each winner must get a different car");
         }
     }
@@ -60,7 +62,8 @@ class CarRentServiceConcurrencyTest {
 
         List<Object> results = race(30, i -> service.reserve("c" + i, types[i % 3], START, 1));
 
-        assertTrue(results.stream().allMatch(Reservation.class::isInstance), "all 30 fit in 30 cars");
+        assertTrue(results.stream().allMatch(Reservation.class::isInstance),
+                   "all 30 fit in 30 cars");
         for (CarType type : types) {
             assertEquals(0, service.availableCount(type, START, 1));
         }
@@ -71,7 +74,8 @@ class CarRentServiceConcurrencyTest {
         Object run(int index);
     }
 
-    private static List<Object> race(int n, IndexedTask task) throws InterruptedException, ExecutionException {
+    private static List<Object> race(int n,
+                                     IndexedTask task) throws InterruptedException, ExecutionException {
         ExecutorService pool = Executors.newFixedThreadPool(n);
         try {
             CountDownLatch ready = new CountDownLatch(n);

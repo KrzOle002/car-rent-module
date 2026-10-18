@@ -62,40 +62,46 @@ public final class CarRentService {
                     .filter(s -> s.isAvailable(period)) // never trust a pluggable strategy blindly
                     .orElseThrow(() -> new NoCarAvailableException(type, period));
 
-            Reservation reservation = new Reservation(UUID.randomUUID(), customerId, schedule.car(), period);
+            Reservation reservation = new Reservation(UUID.randomUUID(), customerId,
+                                                      schedule.getCar(), period);
             schedule.add(reservation);
-            reservationsById.put(reservation.id(), reservation);
+            reservationsById.put(reservation.getId(), reservation);
             return reservation;
         } finally {
             lock.unlock();
         }
     }
 
-    /** Cancels a reservation, making its car available again for that period. */
+    /**
+     * Cancels a reservation, making its car available again for that period.
+     */
     public void cancel(UUID reservationId) {
         Reservation reservation = reservationsById.get(reservationId);
         if (reservation == null) {
             throw new ReservationNotFoundException(reservationId);
         }
-        ReentrantLock lock = locksByType.get(reservation.carType());
+        ReentrantLock lock = locksByType.get(reservation.getCarType());
         lock.lock();
         try {
             if (reservationsById.remove(reservationId) == null) {
                 throw new ReservationNotFoundException(reservationId); // cancelled concurrently
             }
-            scheduleOf(reservation.car()).remove(reservationId);
+            scheduleOf(reservation.getCar()).remove(reservationId);
         } finally {
             lock.unlock();
         }
     }
 
-    /** How many cars are free for the whole period. Informational, not a promise. */
+    /**
+     * How many cars are free for the whole period. Informational, not a promise.
+     */
     public int availableCount(CarType type, LocalDateTime start, int days) {
         RentPeriod period = new RentPeriod(start, days);
         ReentrantLock lock = locksByType.get(type);
         lock.lock();
         try {
-            return (int) schedulesByType.get(type).stream().filter(s -> s.isAvailable(period)).count();
+            return (int) schedulesByType.get(type).stream().filter(
+                    s -> s.isAvailable(period)).count();
         } finally {
             lock.unlock();
         }
@@ -115,7 +121,7 @@ public final class CarRentService {
 
     private CarSchedule scheduleOf(Car car) {
         return schedulesByType.get(car.getType()).stream()
-                .filter(s -> s.car().equals(car))
+                .filter(s -> s.getCar().equals(car))
                 .findFirst()
                 .orElseThrow();
     }

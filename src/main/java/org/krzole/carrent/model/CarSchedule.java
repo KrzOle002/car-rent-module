@@ -14,13 +14,13 @@ public final class CarSchedule {
         this.car = car;
     }
 
-    public Car car() {
+    public Car getCar() {
         return car;
     }
 
     public boolean isAvailable(RentPeriod period) {
         for (Reservation existing : reservations) {
-            if (existing.period().overlaps(period)) {
+            if (existing.getPeriod().overlaps(period)) {
                 return false;
             }
         }
@@ -28,17 +28,18 @@ public final class CarSchedule {
     }
 
     public void add(Reservation reservation) {
-        if (!reservation.car().equals(car)) {
+        if (!reservation.getCar().equals(car)) {
             throw new IllegalArgumentException("Reservation is for a different car");
         }
-        if (!isAvailable(reservation.period())) {
-            throw new IllegalStateException("Car " + car.getVin() + " is already booked in " + reservation.period());
+        if (!isAvailable(reservation.getPeriod())) {
+            throw new IllegalStateException(
+                    "Car " + car.getVin() + " is already booked in " + reservation.getPeriod());
         }
         reservations.add(reservation);
     }
 
     public boolean remove(UUID reservationId) {
-        return reservations.removeIf(r -> r.id().equals(reservationId));
+        return reservations.removeIf(r -> r.getId().equals(reservationId));
     }
 
     public List<Reservation> reservations() {

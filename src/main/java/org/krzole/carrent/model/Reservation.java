@@ -19,23 +19,23 @@ public final class Reservation {
         this.period = Objects.requireNonNull(period, "period");
     }
 
-    public UUID id() {
+    public UUID getId() {
         return id;
     }
 
-    public String customerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
-    public Car car() {
+    public Car getCar() {
         return car;
     }
 
-    public RentPeriod period() {
+    public RentPeriod getPeriod() {
         return period;
     }
 
-    public CarType carType() {
+    public CarType getCarType() {
         return car.getType();
     }
 

@@ -27,7 +27,8 @@ class CarScheduleTest {
     }
 
     private Reservation book(LocalDateTime start, int days) {
-        Reservation r = new Reservation(UUID.randomUUID(), "customer", car, new RentPeriod(start, days));
+        Reservation r = new Reservation(UUID.randomUUID(), "customer", car,
+                                        new RentPeriod(start, days));
         schedule.add(r);
         return r;
     }
@@ -45,11 +46,13 @@ class CarScheduleTest {
     void overlapAndAdjacency() {
         book(DAY_1.plusDays(5), 3); // days 6..9
 
-        assertFalse(schedule.isAvailable(new RentPeriod(DAY_1.plusDays(4), 2)), "overlaps the start");
+        assertFalse(schedule.isAvailable(new RentPeriod(DAY_1.plusDays(4), 2)),
+                    "overlaps the start");
         assertFalse(schedule.isAvailable(new RentPeriod(DAY_1.plusDays(7), 5)), "overlaps the end");
         assertFalse(schedule.isAvailable(new RentPeriod(DAY_1, 20)), "covers it entirely");
         assertTrue(schedule.isAvailable(new RentPeriod(DAY_1, 5)), "ends exactly when it starts");
-        assertTrue(schedule.isAvailable(new RentPeriod(DAY_1.plusDays(8), 2)), "starts exactly when it ends");
+        assertTrue(schedule.isAvailable(new RentPeriod(DAY_1.plusDays(8), 2)),
+                   "starts exactly when it ends");
     }
 
     @Test
@@ -92,8 +95,8 @@ class CarScheduleTest {
     @DisplayName("Removing a reservation frees its period")
     void removeFreesPeriod() {
         Reservation r = book(DAY_1, 3);
-        assertTrue(schedule.remove(r.id()));
+        assertTrue(schedule.remove(r.getId()));
         assertTrue(schedule.isAvailable(new RentPeriod(DAY_1, 3)));
-        assertFalse(schedule.remove(r.id()));
+        assertFalse(schedule.remove(r.getId()));
     }
 }
