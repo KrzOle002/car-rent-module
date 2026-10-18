@@ -25,13 +25,13 @@ public final class RentPeriod {
     return days;
   }
 
-  public LocalDateTime end() {
+  public LocalDateTime getEnd() {
     return start.plusDays(days);
   }
 
   /** True when the two periods share at least one instant. */
   public boolean overlaps(RentPeriod other) {
-    return start.isBefore(other.end()) && other.start.isBefore(end());
+    return start.isBefore(other.getEnd()) && other.start.isBefore(getEnd());
   }
 
 
