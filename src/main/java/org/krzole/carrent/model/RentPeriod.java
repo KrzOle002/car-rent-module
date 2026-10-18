@@ -17,11 +17,11 @@ public final class RentPeriod {
     this.days = days;
   }
 
-  public LocalDateTime start() {
+  public LocalDateTime getStart() {
     return start;
   }
 
-  public int days() {
+  public int getDays() {
     return days;
   }
 
